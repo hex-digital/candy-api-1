@@ -9,8 +9,6 @@ use Illuminate\Foundation\Bootstrap\LoadEnvironmentVariables;
 
 abstract class TestCase extends \Orchestra\Testbench\TestCase
 {
-    protected $requiresRefresh = false;
-
     protected function setUp()
     {
         parent::setUp();

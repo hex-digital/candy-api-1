@@ -8,9 +8,10 @@ use League\Fractal\Manager;
 use GetCandy\Api\Core\Factory;
 use Laravel\Passport\Passport;
 use Illuminate\Support\ServiceProvider;
+use GetCandy\Api\Core\Taxes\TaxCalculator;
 use GetCandy\Api\Core\Orders\OrderCriteria;
-use GetCandy\Api\Core\Search\SearchContract;
 use GetCandy\Api\Core\Plugins\PluginManager;
+use GetCandy\Api\Core\Search\SearchContract;
 use GetCandy\Api\Core\Baskets\BasketCriteria;
 use GetCandy\Api\Core\Payments\PaymentManager;
 use GetCandy\Api\Core\Pricing\PriceCalculator;
@@ -19,29 +20,30 @@ use GetCandy\Api\Core\Discounts\DiscountFactory;
 use GetCandy\Api\Core\Users\Services\UserService;
 use GetCandy\Api\Core\Discounts\DiscountInterface;
 use GetCandy\Api\Http\Middleware\SetTaxMiddleware;
-use GetCandy\Api\Core\Taxes\TaxCalculator;
-use GetCandy\Api\Core\Users\Contracts\UserContract;
 use GetCandy\Api\Core\Currencies\CurrencyConverter;
+use GetCandy\Api\Core\Orders\Services\OrderService;
+use GetCandy\Api\Core\Users\Contracts\UserContract;
 use GetCandy\Api\Http\Middleware\SetCustomerGroups;
 use GetCandy\Api\Core\Plugins\PluginManagerInterface;
 use GetCandy\Api\Http\Middleware\SetLocaleMiddleware;
-use GetCandy\Api\Core\Baskets\Factories\BasketFactory;
 use GetCandy\Api\Console\Commands\ElasticIndexCommand;
-use GetCandy\Api\Core\Pricing\PriceCalculatorInterface;
+use GetCandy\Api\Core\Baskets\Factories\BasketFactory;
 use GetCandy\Api\Console\Commands\ScoreProductsCommand;
+use GetCandy\Api\Core\Pricing\PriceCalculatorInterface;
 use GetCandy\Api\Http\Middleware\SetCurrencyMiddleware;
 use GetCandy\Api\Core\Products\Factories\ProductFactory;
 use GetCandy\Api\Http\Middleware\CheckClientCredentials;
 use GetCandy\Api\Console\Commands\InstallGetCandyCommand;
 use GetCandy\Api\Core\Baskets\Interfaces\BasketInterface;
-use GetCandy\Api\Core\Currencies\Services\CurrencyService;
 use GetCandy\Api\Core\Baskets\Factories\BasketLineFactory;
-use GetCandy\Api\Core\Search\Factories\SearchResultFactory;
+use GetCandy\Api\Core\Currencies\Services\CurrencyService;
 use GetCandy\Api\Core\Products\Interfaces\ProductInterface;
+use GetCandy\Api\Core\Search\Factories\SearchResultFactory;
 use GetCandy\Api\Core\Baskets\Interfaces\BasketLineInterface;
+use GetCandy\Api\Core\Baskets\Factories\BasketDiscountFactory;
+use GetCandy\Api\Core\Orders\Interfaces\OrderServiceInterface;
 use GetCandy\Api\Core\Search\Interfaces\SearchResultInterface;
 use GetCandy\Api\Core\Taxes\Interfaces\TaxCalculatorInterface;
-use GetCandy\Api\Core\Baskets\Factories\BasketDiscountFactory;
 use GetCandy\Api\Core\Orders\Interfaces\OrderCriteriaInterface;
 use GetCandy\Api\Core\Products\Factories\ProductVariantFactory;
 use GetCandy\Api\Core\Baskets\Interfaces\BasketCriteriaInterface;
@@ -170,7 +172,7 @@ class ApiServiceProvider extends ServiceProvider
         });
 
         $this->app->singleton('currency_converter', function ($app) {
-            return new CurrencyConverter;
+            return $app->make(CurrencyConverter::class);
         });
 
         $this->app->singleton('api', function ($app) {
@@ -208,6 +210,10 @@ class ApiServiceProvider extends ServiceProvider
 
         $this->app->bind(BasketCriteriaInterface::class, function ($app) {
             return $app->make(BasketCriteria::class);
+        });
+
+        $this->app->bind(OrderServiceInterface::class, function ($app) {
+            return $app->make(OrderService::class);
         });
 
         $this->app->singleton(DiscountInterface::class, function ($app) {

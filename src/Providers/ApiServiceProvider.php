@@ -34,7 +34,6 @@ use GetCandy\Api\Http\Middleware\SetCurrencyMiddleware;
 use GetCandy\Api\Core\Products\Factories\ProductFactory;
 use GetCandy\Api\Http\Middleware\CheckClientCredentials;
 use GetCandy\Api\Console\Commands\InstallGetCandyCommand;
-use GetCandy\Api\Core\Baskets\Interfaces\BasketInterface;
 use GetCandy\Api\Core\Baskets\Factories\BasketLineFactory;
 use GetCandy\Api\Core\Currencies\Services\CurrencyService;
 use GetCandy\Api\Core\Products\Interfaces\ProductInterface;
@@ -46,6 +45,7 @@ use GetCandy\Api\Core\Search\Interfaces\SearchResultInterface;
 use GetCandy\Api\Core\Taxes\Interfaces\TaxCalculatorInterface;
 use GetCandy\Api\Core\Orders\Interfaces\OrderCriteriaInterface;
 use GetCandy\Api\Core\Products\Factories\ProductVariantFactory;
+use GetCandy\Api\Core\Baskets\Interfaces\BasketFactoryInterface;
 use GetCandy\Api\Core\Baskets\Interfaces\BasketCriteriaInterface;
 use GetCandy\Api\Core\Products\Interfaces\ProductVariantInterface;
 use GetCandy\Api\Core\Currencies\Interfaces\CurrencyServiceInterface;
@@ -196,7 +196,7 @@ class ApiServiceProvider extends ServiceProvider
         }
 
         // New factory bindings
-        $this->app->singleton(BasketInterface::class, function ($app) {
+        $this->app->singleton(BasketFactoryInterface::class, function ($app) {
             return $app->make(BasketFactory::class);
         });
 

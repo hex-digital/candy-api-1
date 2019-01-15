@@ -35,6 +35,11 @@ class Basket extends BaseModel
      */
     public $total_cost = 0;
 
+    /**
+     * The basket discount total
+     *
+     * @var integer
+     */
     public $discount_total = 0;
 
     /**

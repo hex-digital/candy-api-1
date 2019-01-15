@@ -46,7 +46,7 @@ class PriceCalculator implements PriceCalculatorInterface
         if ($tax == 'default') {
             $taxamount = $this->taxes->amount($converted);
         } else {
-            $taxamount = $this->taxes->set($tax)->amount($converted);
+            $taxamount = $this->taxes->setTax($tax)->amount($converted);
         }
 
         $this->pricing = [

@@ -8,43 +8,41 @@ use Tests\TestCase;
 use Tests\Stubs\User;
 use GetCandy\Api\Core\Baskets\Models\Basket;
 use GetCandy\Api\Core\Products\Models\Product;
+use GetCandy\Api\Core\Baskets\Services\BasketService;
 
+/**
+ * @group baskets
+ */
 class BasketTest extends TestCase
 {
-    /**
-     * A basic test example.
-     *
-     * @return void
-     */
     public function testGuestBasketCanBeCreatedAndRetrieved()
     {
-        $basket = app('api')->baskets()->getBasket();
+        $products = Product::count();
+        $service  = $this->app->make(BasketService::class);
+        $basket = $service->getBasket();
         $basketId = $basket->encodedId();
-
         $this->assertTrue($basket instanceof Basket);
-
-        $basket = app('api')->baskets()->getBasket($basketId);
-
+        $basket = $service->getBasket($basketId);
         $this->assertTrue($basket->encodedId() === $basketId);
     }
 
     public function testBasketTotalIsInCents()
     {
-        $basket = app('api')->baskets()->getBasket();
-        $basketId = $basket->encodedId();
+        $service  = $this->app->make(BasketService::class);
+        $basket = $service->getBasket();
 
         $this->assertTrue($basket instanceof Basket);
 
         $variant = Product::first()->variants()->first();
 
-        $basket = app('api')->baskets()->store([
+        $basket = $service->store([
             'basket_id' => $basket->encodedId(),
             'variants' => [
                 ['id' => $variant->encodedId(), 'quantity' => 1],
             ],
         ]);
 
-        $basket->refresh();
+        dd($basket);
 
         $this->assertEquals($variant->price, $basket->subTotal);
 

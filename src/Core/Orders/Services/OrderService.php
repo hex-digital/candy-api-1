@@ -53,17 +53,26 @@ class OrderService extends BaseService implements OrderServiceInterface
      */
     protected $currencies;
 
+    /**
+     * The price calculator instance
+     *
+     * @var PriceCalculatorInterface
+     */
+    protected $calculator;
+
     public function __construct(
         BasketService $baskets,
         PaymentService $payments,
         ProductVariantFactory $variants,
-        CurrencyConverterInterface $currencies
+        CurrencyConverterInterface $currencies,
+        PriceCalculatorInterface $calculator
     ) {
         $this->model = new Order();
         $this->baskets = $baskets;
         $this->payments = $payments;
         $this->variants = $variants;
         $this->currencies = $currencies;
+        $this->calculator = $calculator;
     }
 
     /**
@@ -142,6 +151,8 @@ class OrderService extends BaseService implements OrderServiceInterface
     public function addShippingLine($orderId, $shippingPriceId, $preference = null)
     {
         $order = $this->getByHashedId($orderId);
+
+
         $price = app('api')->shippingPrices()->getByHashedId($shippingPriceId);
 
         $updateFields = [
@@ -158,7 +169,7 @@ class OrderService extends BaseService implements OrderServiceInterface
 
         $tax = app('api')->taxes()->getDefaultRecord();
 
-        $rate = PriceCalculator::get(
+        $rate = $this->calculator->get(
             $price->rate,
             $tax->percentage
         );
@@ -423,9 +434,9 @@ class OrderService extends BaseService implements OrderServiceInterface
 
         $order->save();
 
-        // event(new OrderSavedEvent($order));
+        event(new OrderSavedEvent($order));
 
-        $this->recalculate();
+        $this->recalculate($order);
 
         return $order;
     }
@@ -565,11 +576,11 @@ class OrderService extends BaseService implements OrderServiceInterface
             array_push($lines, [
                 'product_variant_id' => $line->variant->id,
                 'sku' => $line->variant->sku,
-                'tax_total' => $line->total_tax,
+                'tax_total' => $line->total_tax * 100,
                 'tax_rate' => $line->variant->tax->percentage,
                 'discount_total' => $line->discount_total ?? 0,
-                'line_total' => $line->total_cost,
-                'unit_price' => $line->base_cost,
+                'line_total' => $line->total_cost * 100,
+                'unit_price' => $line->base_cost * 100,
                 'unit_qty' => $line->variant->unit_qty,
                 'quantity' => $line->quantity,
                 'description' => $line->variant->product->attribute('name'),

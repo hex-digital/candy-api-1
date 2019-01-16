@@ -73,25 +73,4 @@ class BasketServiceTest extends TestCase
             $this->assertEquals($line->variant->unit_cost, $line->total);
         }
     }
-
-    private function getinitalbasket($user = null)
-    {
-        $variant = ProductVariant::first();
-        $basket = Basket::forceCreate([
-            'currency' => 'GBP',
-        ]);
-
-        if ($user) {
-            $basket->user_id = $user->id;
-            $basket->save();
-        }
-
-        BasketLine::forceCreate([
-            'product_variant_id' => $variant->id,
-            'basket_id' => $basket->id,
-            'quantity' => 1,
-            'total' => $variant->price,
-        ]);
-        return $basket;
-    }
 }

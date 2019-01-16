@@ -13,7 +13,7 @@ use GetCandy\Api\Core\Baskets\Interfaces\BasketFactoryInterface;
 use GetCandy\Api\Core\Products\Factories\ProductVariantFactory;
 
 /**
- * @group current
+ * @group baskets
  */
 class BasketFactoryTest extends TestCase
 {
@@ -60,36 +60,11 @@ class BasketFactoryTest extends TestCase
 
         $total = $subTotal + $taxTotal;
 
-        $this->assertEquals($basket->sub_total, 0);
-        $this->assertEquals($basket->total_tax, 0);
-        $this->assertEquals($basket->total_cost, 0);
-
         $factory->init($basket)->get();
 
         $this->assertEquals($basket->sub_total, $subTotal);
         $this->assertEquals($basket->total_tax, $taxTotal);
         $this->assertEquals($basket->total_cost, $total);
 
-    }
-
-    private function getinitalbasket($user = null)
-    {
-        $variant = ProductVariant::first();
-        $basket = Basket::forceCreate([
-            'currency' => 'GBP',
-        ]);
-
-        if ($user) {
-            $basket->user_id = $user->id;
-            $basket->save();
-        }
-
-        BasketLine::forceCreate([
-            'product_variant_id' => $variant->id,
-            'basket_id' => $basket->id,
-            'quantity' => 1,
-            'total' => $variant->price,
-        ]);
-        return $basket;
     }
 }

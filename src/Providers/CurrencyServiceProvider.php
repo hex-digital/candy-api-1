@@ -12,7 +12,7 @@ class CurrencyServiceProvider extends ServiceProvider
 {
     public function register()
     {
-        $this->app->bind(CurrencyConverterInterface::class, function ($app) {
+        $this->app->singleton(CurrencyConverterInterface::class, function ($app) {
             return $app->make(CurrencyConverter::class);
         });
 

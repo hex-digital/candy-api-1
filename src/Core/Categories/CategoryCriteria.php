@@ -21,6 +21,14 @@ class CategoryCriteria extends AbstractCriteria
      */
     protected $tree = false;
 
+    public function setDepth($depth)
+    {
+        if ($depth) {
+            $this->depth = $depth;
+        }
+        return $this;
+    }
+
     /**
      * Gets the underlying builder for the query.
      *
@@ -40,7 +48,6 @@ class CategoryCriteria extends AbstractCriteria
         if ($this->limit && ! $this->tree) {
             $builder->limit($this->limit);
         }
-
         $builder->defaultOrder()
             ->withDepth()
             ->having('depth', '<=', $this->depth);

@@ -418,6 +418,7 @@ class OrderFactory implements OrderFactoryInterface
     protected function resolveDiscounts($order)
     {
         $basket = $order->basket;
+        $basket = $this->basket;
 
         foreach ($basket->discounts as $discount) {
             // Get the eligibles.

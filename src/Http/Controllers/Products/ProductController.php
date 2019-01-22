@@ -16,7 +16,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 use GetCandy\Api\Http\Resources\Products\ProductCollection;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use GetCandy\Api\Http\Transformers\Fractal\Products\ProductTransformer;
-use GetCandy\Api\Http\Transformers\Fractal\Products\ProductRecommendationTransformer;
+use GetCandy\Api\Http\Resources\Products\ProductRecommendationCollection;
 
 class ProductController extends BaseController
 {
@@ -89,8 +89,8 @@ class ProductController extends BaseController
         })->toArray();
 
         $recommendations = app('api')->products()->getRecommendations($products);
-
-        return $this->respondWithCollection($recommendations, new ProductRecommendationTransformer);
+        
+        return new ProductRecommendationCollection($recommendations);
     }
 
     /**

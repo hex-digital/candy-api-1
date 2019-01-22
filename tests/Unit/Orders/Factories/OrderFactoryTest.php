@@ -8,10 +8,15 @@ use Tests\Stubs\User;
 use Illuminate\Support\Facades\Event;
 use GetCandy\Api\Core\Orders\Models\Order;
 use GetCandy\Api\Core\Addresses\Models\Address;
+use GetCandy\Api\Core\Discounts\Models\Discount;
 use GetCandy\Api\Core\Orders\Events\OrderSavedEvent;
 use GetCandy\Api\Core\Orders\Factories\OrderFactory;
 use GetCandy\Api\Core\Orders\Interfaces\OrderFactoryInterface;
 use GetCandy\Api\Core\Orders\Exceptions\BasketHasPlacedOrderException;
+use GetCandy\Api\Core\Discounts\Models\DiscountCriteriaSet;
+use GetCandy\Api\Core\Discounts\Models\DiscountReward;
+use GetCandy\Api\Core\Discounts\Models\DiscountCriteriaItem;
+use GetCandy\Api\Core\Baskets\Factories\BasketFactory;
 
 /**
  * @group orders
@@ -203,6 +208,65 @@ class OrderFactoryTest extends TestCase
 
         $this->expectException(BasketHasPlacedOrderException::class);
         $factory->basket($basket)->resolve();
+    }
+
+    /**
+     * @group current
+     */
+    public function test_percentage_coupon_can_be_set()
+    {
+        $factory = $this->app->make(OrderFactory::class);
+        $basket = $this->getinitalbasket();
+
+        $discount = Discount::forceCreate([
+            'attribute_data' => [
+                'name' => ['en' => 'Test Discount'],
+            ],
+            'status' => 1,
+            'channel_id' => 1,
+            'start_at' => \Carbon\Carbon::now()->startOfDay(),
+            'end_at' => \Carbon\Carbon::now()->endOfDay(),
+            'lower_limit' => 1,
+        ]);
+
+        $criteria = DiscountCriteriaSet::forceCreate([
+            'discount_id' => $discount->id,
+            'scope' => 'all',
+            'outcome' => 1,
+        ]);
+
+        DiscountReward::forceCreate([
+            'discount_id' => $discount->id,
+            'type' => 'percentage',
+            'value' => 10
+        ]);
+
+        DiscountCriteriaItem::forceCreate([
+            'discount_criteria_set_id' => $criteria->id,
+            'type' => 'coupon',
+            'value' => 'TESTCOUPON',
+        ]);
+
+        \DB::table('basket_discount')->insert([
+            'basket_id' => $basket->id,
+            'discount_id' => $discount->id,
+            'coupon' => 'TESTCOUPON',
+        ]);
+
+        $basket = $this->app->make(BasketFactory::class)->init($basket->refresh())->get();
+
+        $this->assertCount(1, $basket->discounts);
+
+        $order = $factory->basket($basket)->resolve();
+
+        $this->assertEquals($basket->sub_total, $order->sub_total / 100);
+        $this->assertEquals($basket->discount_total, $order->discount_total / 100);
+        $this->assertEquals($basket->total_tax, $order->tax_total / 100);
+        $this->assertEquals($basket->total_cost, $order->order_total / 100);
+
+        foreach ($order->discounts as $discount) {
+            $this->assertEquals(100, $discount->amount);
+        }
     }
 
     // public function test_can_add_shipping_to_an_order()

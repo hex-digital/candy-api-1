@@ -5,15 +5,10 @@ namespace Tests\Unit\Orders\Services;
 use Carbon\Carbon;
 use Tests\TestCase;
 use Tests\Stubs\TestPaymentManager;
-use Illuminate\Support\Facades\Event;
-use GetCandy\Api\Core\Orders\Models\Order;
-use GetCandy\Api\Core\Addresses\Models\Address;
 use GetCandy\Api\Core\Payments\PaymentContract;
 use GetCandy\Api\Core\Payments\Models\PaymentType;
-use GetCandy\Api\Core\Orders\Events\OrderSavedEvent;
 use GetCandy\Api\Core\Orders\Factories\OrderFactory;
 use GetCandy\Api\Core\Orders\Factories\OrderProcessingFactory;
-use GetCandy\Api\Core\Orders\Exceptions\BasketHasPlacedOrderException;
 use GetCandy\Api\Core\Orders\Interfaces\OrderProcessingFactoryInterface;
 
 

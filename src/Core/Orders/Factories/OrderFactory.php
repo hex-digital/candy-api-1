@@ -417,7 +417,7 @@ class OrderFactory implements OrderFactoryInterface
      */
     protected function resolveDiscounts($order)
     {
-        $basket = $order->basket;
+        $order->discounts()->delete();
         $basket = $this->basket;
 
         foreach ($basket->discounts as $discount) {

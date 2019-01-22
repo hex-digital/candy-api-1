@@ -177,7 +177,7 @@ class OrderProcessingFactory implements OrderProcessingFactoryInterface
      */
     protected function processResponse(PaymentResponse $response)
     {
-        if ($transaction->success) {
+        if ($response->success) {
             if ($this->provider) {
                 $this->order->status = $this->provider->success_status;
             } else {

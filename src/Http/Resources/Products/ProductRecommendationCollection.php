@@ -11,7 +11,7 @@ class ProductRecommendationCollection extends AbstractCollection
      *
      * @var string
      */
-    public $collects = ProductResource::class;
+    public $collects = ProductRecommendationResource::class;
 
     /**
      * Transform the resource collection into an array.

@@ -16,7 +16,7 @@ class ProductRecommendationResource extends AbstractResource
     public function includes()
     {
         return [
-            'product' => new ProductResource($this->whenLoaded('product')),
+            'product' => ['data' => new ProductResource($this->whenLoaded('product'))],
         ];
     }
 }

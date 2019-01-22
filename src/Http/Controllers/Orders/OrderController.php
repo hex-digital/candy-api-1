@@ -123,7 +123,7 @@ class OrderController extends BaseController
             return $this->errorForbidden(trans('getcandy::exceptions.basket_already_has_placed_order'));
         }
 
-        return new OrderResource($order->load($request->includes));
+        return new OrderResource($order->load($request->includes ?: []));
     }
 
     /**

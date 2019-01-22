@@ -6,8 +6,6 @@ use DB;
 use PDF;
 use Event;
 use Carbon\Carbon;
-use PriceCalculator;
-use CurrencyConverter;
 use GetCandy\Api\Core\Orders\Models\Order;
 use GetCandy\Api\Core\Scaffold\BaseService;
 use GetCandy\Api\Core\Baskets\Models\Basket;
@@ -133,7 +131,7 @@ class OrderService extends BaseService implements OrderServiceInterface
 
         $order->load([
             'discounts',
-            'lines.productVariant.product.assets.transforms',
+            'lines.variant.product.assets.transforms',
         ]);
 
         return $order;
@@ -496,7 +494,7 @@ class OrderService extends BaseService implements OrderServiceInterface
         $id = $this->model->decodeId($id);
         $query = $this->model->withoutGlobalScope('open')->withoutGlobalScope('not_expired');
 
-        return $query->with(['lines.productVariant', 'transactions', 'discounts'])->findOrFail($id);
+        return $query->with(['lines.variant', 'transactions', 'discounts'])->findOrFail($id);
     }
 
     /**

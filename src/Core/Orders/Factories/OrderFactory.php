@@ -445,14 +445,14 @@ class OrderFactory implements OrderFactoryInterface
                         ]);
 
                         $total = 0;
-                        $bTotal = $basket->sub_total;
+
                         foreach ($discount->rewards as $reward) {
                             if ($reward->type == 'percentage') {
-                                $total += $bTotal * $reward->value;
+                                $total += (($basket->sub_total + $basket->discount_total) * $reward->value) / 100;
                             }
                         }
 
-                        $coupon->amount = $total;
+                        $coupon->amount = $total * 100;
 
                         $coupon->save();
                     }

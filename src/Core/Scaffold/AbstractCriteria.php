@@ -104,6 +104,11 @@ abstract class AbstractCriteria
         return $this->getBuilder()->firstOrFail();
     }
 
+    public function all()
+    {
+        return $this->getBuilder()->get();
+    }
+
     /**
      * Get the result.
      *

@@ -61,6 +61,7 @@ class OrderController extends BaseController
         $criteria = $this->orders;
 
         $criteria->fill($request->all())
+            ->include($request->includes ?: [])
             ->set('without_scopes', [
                 'open',
                 'not_expired',

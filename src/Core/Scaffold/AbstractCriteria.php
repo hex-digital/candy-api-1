@@ -67,7 +67,6 @@ abstract class AbstractCriteria
             $arrayOrString = array_map('trim', explode(',', trim($arrayOrString)));
         }
         $this->includes = $arrayOrString;
-
         return $this;
     }
 

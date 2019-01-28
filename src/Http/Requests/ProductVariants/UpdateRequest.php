@@ -27,6 +27,7 @@ class UpdateRequest extends FormRequest
         return [
             'sku' => 'required|unique:product_variants,sku,'.$variant->decodeId($this->variant),
             'pricing' => 'array',
+            'tax_id' => 'required|hashid_is_valid:taxes',
             'pricing.*.customer_group_id' => 'required|hashid_is_valid:customer_groups',
         ];
     }

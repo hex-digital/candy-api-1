@@ -159,7 +159,7 @@ class OrderController extends BaseController
                 ->provider($type)
                 ->nonce($request->payment_token)
                 ->type($request->type)
-                ->payload($request->data)
+                ->payload($request->data ?: [])
                 ->resolve();
 
             if (! $order->placed_at) {

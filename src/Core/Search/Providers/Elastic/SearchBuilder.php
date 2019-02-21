@@ -495,6 +495,10 @@ class SearchBuilder
         // Set filters as post filters
         $postFilter = new BoolQuery;
 
+
+
+        $cloned = $query;
+
         foreach ($this->filters as $filter) {
             if (! empty($filter['post'])) {
                 $postFilter->addFilter(
@@ -516,19 +520,18 @@ class SearchBuilder
         }
         $query->setPostFilter($postFilter);
 
+        // If we have a category or customer group filter
+        // then make sure the aggregation supports it.
+        $topLevelFilters = $this->filters->filter(function ($filter) {
+            return in_array($filter['handle'], $this->topFilters);
+        });
+
         foreach ($this->aggregations as $agg) {
-
-            // If we have a category or customer group filter
-            // then make sure the aggregation supports it.
-            $topLevelFilters = $this->filters->filter(function ($filter) {
-                return in_array($filter['handle'], $this->topFilters);
-            });
-
+            $boolQuery = new BoolQuery;
             foreach ($topLevelFilters as $filter) {
                 $agg = $agg->addFilter($filter);
+                $boolQuery->addFilter($filter['filter']->getQuery());
             }
-
-            $cloned = $query;
             $query->addAggregation($agg->getPre(
                 $this->getSearch(),
                 $cloned->setQuery($boolQuery),

@@ -1,3 +1,24 @@
+#0.2.66
+
+- [improved] Improved handling for duplicate saved cards on SagePay
+
+#0.2.65
+
+- [changed] Add country check when getting shipping methods via a catch all zip
+- [changed] Zip code is no longer required
+- [changed] Updated logic on order address saving to allow emptying fields
+- [changed] `getDetails($type)` is now a public method on orders
+- [changed] Stopped automatic assignment of values when creating an order for a user as lead to unexpected values.
+- [changed] Simplified the way order references get incremented.
+
+#0.2.63
+
+- [fixed] #147
+- [added] Added custom query builder for category tree*
+- [fixed] Fixed shipping preference not resetting when no preference was passed through
+
+The was an issue when using nested set on alot of categories. The way category depth was calculated, combined with the channel scope caused indexes to not be honoured on MySQL 5.7, causing a HUGE query, which most of the time crashed the site, we're taking off global scopes when calculating the depth as it should have zero negative effect on what gets returned, but should drastically speed things up.
+
 #0.2.62
 
 - [added] Added attributes include to shipping methods

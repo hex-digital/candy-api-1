@@ -209,7 +209,6 @@ class OrderFactory implements OrderFactoryInterface
 
         if ($this->user) {
             $order->user()->associate($this->user);
-            $this->setUserFields($order);
         }
 
         $order->conversion = $this->currencies->set($this->basket->currency)->rate();
@@ -382,7 +381,7 @@ class OrderFactory implements OrderFactoryInterface
                 DB::RAW('line_total + tax_total - discount_total as grand_total')
             )->whereIsShipping(true)->get();
 
-        foreach($shippingLines as $shipping) {
+        foreach ($shippingLines as $shipping) {
             $totals->delivery_total += $shipping->line_total;
             $totals->tax_total += $shipping->tax_total;
             $totals->discount_total += $shipping->discount_total;
@@ -430,9 +429,7 @@ class OrderFactory implements OrderFactoryInterface
             'shipping_method' => $this->shipping->method->name,
         ];
 
-        if ($this->preference) {
-            $updateFields['shipping_preference'] = $this->preference;
-        }
+        $updateFields['shipping_preference'] = $this->preference;
 
         $order->update($updateFields);
 

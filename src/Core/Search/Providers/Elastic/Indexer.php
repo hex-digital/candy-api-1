@@ -8,6 +8,8 @@ use Elastica\Reindex;
 use Elastica\Document;
 use Elastica\Type\Mapping;
 use Illuminate\Database\Eloquent\Model;
+use GetCandy\Api\Core\Scopes\ChannelScope;
+use GetCandy\Api\Core\Scopes\CustomerGroupScope;
 use GetCandy\Api\Core\Languages\Services\LanguageService;
 
 class Indexer
@@ -66,7 +68,12 @@ class Indexer
             $aliases[$alias] = $alias."_{$suffix}";
         }
 
-        $models = $model->withoutGlobalScopes()->limit(1000)->offset($this->batch)->get();
+        $models = $model->withoutGlobalScopes([
+            CustomerGroupScope::class,
+            ChannelScope::class,
+        ])->limit(1000)
+            ->offset($this->batch)
+            ->get();
 
         $type->setSuffix($suffix);
 
@@ -257,7 +264,6 @@ class Indexer
 
     public function updateDocuments($models, $field = null)
     {
-        dd($models);
         $this->against($models->first());
 
         $type = $this->getType($models->first());
@@ -382,6 +388,11 @@ class Indexer
                         'type' => 'custom',
                         'tokenizer' => 'standard',
                         'filter' => ['standard', 'shingle'],
+                    ],
+                    'standard_lowercase' => [
+                        'type' => 'custom',
+                        'tokenizer' => 'standard',
+                        'filter' => ['lowercase'],
                     ],
                     'candy' => [
                         'tokenizer' => 'standard',
